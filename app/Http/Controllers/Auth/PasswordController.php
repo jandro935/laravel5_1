@@ -28,4 +28,19 @@ class PasswordController extends Controller
     {
         $this->middleware('guest');
     }
+
+    /**
+     * Get the post register / login redirect path.
+     *
+     * @return string
+     */
+    public function redirectPath()
+    {
+        return route('home');
+    }
+
+    protected function getEmailSubject()
+    {
+        return trans('passwords.email_subject');
+    }
 }
