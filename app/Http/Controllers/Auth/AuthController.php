@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\User;
 use Validator;
+use App\Models\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\ThrottlesLogins;
 use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
@@ -26,7 +26,6 @@ class AuthController extends Controller
     /**
      * Create a new authentication controller instance.
      *
-     * @return void
      */
     public function __construct()
     {
@@ -56,10 +55,35 @@ class AuthController extends Controller
      */
     protected function create(array $data)
     {
-        return User::create([
+        $user = new User([
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => bcrypt($data['password']),
         ]);
+
+        $user->role = 'user';
+        $user->save();
+
+        return $user;
+    }
+
+    /**
+     * Get the path to the login route.
+     *
+     * @return string
+     */
+    public function loginPath()
+    {
+        return route('login');
+    }
+
+    /**
+     * Get the post register / login redirect path.
+     *
+     * @return string
+     */
+    public function redirectPath()
+    {
+        return route('home');
     }
 }

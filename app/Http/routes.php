@@ -11,15 +11,17 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [
+    'uses' => 'HomeController@index',
+    'as' => 'home'
+]);
 
 // Authentication routes
 Route::get('login', [
     'uses' => 'Auth\AuthController@getLogin',
     'as'   => 'login'
 ]);
+
 Route::post('login', 'Auth\AuthController@postLogin');
 
 Route::get('logout', [
@@ -32,6 +34,7 @@ Route::get('register', [
     'uses' => 'Auth\AuthController@getRegister',
     'as'   => 'register'
 ]);
+
 Route::post('register', 'Auth\AuthController@postRegister');
 
 Route::get('confirmation/{token}', [
