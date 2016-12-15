@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use Validator;
 use App\Models\User;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\ThrottlesLogins;
 use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
 
@@ -88,5 +89,20 @@ class AuthController extends Controller
     public function redirectPath()
     {
         return route('home');
+    }
+
+    /**
+     * Get the needed authorization credentials from the request.
+     *
+     * @param Request|\Illuminate\Http\Request $request
+     * @return array
+     */
+    protected function getCredentials(Request $request)
+    {
+        return [
+            'username' => $request->get('username'),
+            'password' => $request->get('password'),
+            'active' => true
+        ];
     }
 }
