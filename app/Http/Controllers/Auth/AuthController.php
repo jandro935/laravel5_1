@@ -25,7 +25,7 @@ class AuthController extends Controller
 
     use AuthenticatesAndRegistersUsers, ThrottlesLogins;
 
-    protected $username = 'username';
+//    protected $username = 'username';
 
     /**
      * Create a new authentication controller instance.
@@ -143,7 +143,7 @@ class AuthController extends Controller
     	$user->save();
 
 	    return redirect()->route('login')
-		    ->with('alert', 'Email confirmado, ahora puedes iniciar sesión!');
+		    ->with('alert', '¡Tu email ya fue confirmado!');
     }
 
     /**
@@ -158,7 +158,7 @@ class AuthController extends Controller
             'email' => $request->get('email'),
 //            'username' => $request->get('username'),
             'password' => $request->get('password'),
-	        'registration_token' => null,
+//	        'registration_token' => null,
 //            'active' => true
         ];
     }
