@@ -6,6 +6,7 @@ use Validator;
 use App\Models\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Foundation\Auth\ThrottlesLogins;
 use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
 
@@ -31,7 +32,7 @@ class AuthController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('guest', ['except' => 'getLogout']);
+        $this->middleware('guest', ['except' => ['getConfirmation', 'getLogout']]);
     }
 
     /**
@@ -66,7 +67,14 @@ class AuthController extends Controller
         ]);
 
         $user->role = 'user';
+        $user->registration_token = str_random(40);
         $user->save();
+
+        $url = route('confirmation', ['token' => $user->registration_token]);
+
+        Mail::send('emails/registration', compact('user', 'url'), function ($m) use ($user) {
+        	$m->to($user->email, $user->name)->subject('Activa tu cuenta !');
+        });
 
         return $user;
     }
@@ -91,6 +99,53 @@ class AuthController extends Controller
         return route('home');
     }
 
+	/**
+	 * Get the failed login message.
+	 *
+	 * @return string
+	 */
+	protected function getFailedLoginMessage()
+	{
+		return trans('validation.login');
+	}
+
+	/**
+	 * Handle a registration request for the application.
+	 *
+	 * @param  \Illuminate\Http\Request  $request
+	 * @return \Illuminate\Http\Response
+	 */
+	public function postRegister(Request $request)
+	{
+		$validator = $this->validator($request->all());
+
+		if ($validator->fails()) {
+			$this->throwValidationException(
+				$request, $validator
+			);
+		}
+
+		$user = $this->create($request->all());
+
+		return redirect()->route('login')
+			->with('alert', 'Por favor confirma tu email: '.$user->email);
+	}
+
+	/**
+	 * @param $token
+	 *
+	 * @return \Illuminate\Http\RedirectResponse
+	 */
+	protected function getConfirmation($token)
+    {
+    	$user = User::where('registration_token', $token)->firstOrFail();
+    	$user->registration_token = null;
+    	$user->save();
+
+	    return redirect()->route('login')
+		    ->with('alert', 'Email confirmado, ahora puedes iniciar sesión!');
+    }
+
     /**
      * Get the needed authorization credentials from the request.
      *
@@ -100,9 +155,11 @@ class AuthController extends Controller
     protected function getCredentials(Request $request)
     {
         return [
-            'username' => $request->get('username'),
+            'email' => $request->get('email'),
+//            'username' => $request->get('username'),
             'password' => $request->get('password'),
-            'active' => true
+	        'registration_token' => null,
+//            'active' => true
         ];
     }
 }
