@@ -12,7 +12,11 @@ use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
 
 class AuthController extends Controller
 {
-    /*
+//	protected $username = 'username';
+	protected $maxLoginAttempts = 2;
+	protected $lockoutTime = 300;
+
+	/*
     |--------------------------------------------------------------------------
     | Registration & Login Controller
     |--------------------------------------------------------------------------
@@ -25,8 +29,6 @@ class AuthController extends Controller
 
     use AuthenticatesAndRegistersUsers, ThrottlesLogins;
 
-//    protected $username = 'username';
-
     /**
      * Create a new authentication controller instance.
      */
@@ -34,6 +36,16 @@ class AuthController extends Controller
     {
         $this->middleware('guest', ['except' => ['getConfirmation', 'getLogout']]);
     }
+
+	/**
+	 * @param $seconds
+	 *
+	 * @return string
+	 */
+	protected function getLockoutMessage($seconds)
+	{
+		return 'Something ' . $seconds;
+	}
 
     /**
      * Get a validator for an incoming registration request.
