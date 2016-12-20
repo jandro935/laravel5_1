@@ -17,49 +17,63 @@ Route::get('/', [
 ]);
 
 // Authentication routes
-Route::get('login', [
+Route::get('/login', [
     'uses' => 'Auth\AuthController@getLogin',
     'as'   => 'login'
 ]);
 
-Route::post('login', 'Auth\AuthController@postLogin');
+Route::post('/login', 'Auth\AuthController@postLogin');
 
-Route::get('logout', [
+Route::get('/logout', [
     'uses' => 'Auth\AuthController@getLogout',
     'as'   => 'logout'
 ]);
 
 // Registration routes
-Route::get('register', [
+Route::get('/register', [
     'uses' => 'Auth\AuthController@getRegister',
     'as'   => 'register'
 ]);
 
-Route::post('register', 'Auth\AuthController@postRegister');
+Route::post('/register', 'Auth\AuthController@postRegister');
 
-Route::get('confirmation/{token}', [
+Route::get('/confirmation/{token}', [
     'uses' => 'Auth\AuthController@getConfirmation',
     'as'   => 'confirmation'
 ]);
 
 // Password reset link request routes
-Route::get('password/email', 'Auth\PasswordController@getEmail');
-Route::post('password/email', 'Auth\PasswordController@postEmail');
+Route::get('/password/email', 'Auth\PasswordController@getEmail');
+Route::post('/password/email', 'Auth\PasswordController@postEmail');
 
 // Password reset routes
-Route::get('password/reset/{token}', 'Auth\PasswordController@getReset');
-Route::post('password/reset', 'Auth\PasswordController@postReset');
+Route::get('/password/reset/{token}', 'Auth\PasswordController@getReset');
+Route::post('/password/reset', 'Auth\PasswordController@postReset');
 
 Route::group(['middleware' => 'auth'], function () {
 
 	Route::group(['middleware' => 'verified'], function () {
 
-		Route::get('publish', function () {
+		Route::get('/publish', function () {
 			return view('publish');
 		});
 
-		Route::post('publish', function () {
+		Route::post('/publish', function () {
 			return Request::all();
+		});
+	});
+
+	Route::group(['middleware' => 'role:admin'], function () {
+
+		Route::get('/admin/settings', function () {
+			return view('admin/settings');
+		});
+	});
+
+	Route::group(['middleware' => 'role:editor'], function () {
+
+		Route::get('/admin/posts', function () {
+			return view('admin/posts');
 		});
 	});
 });

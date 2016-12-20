@@ -142,7 +142,7 @@ class AuthController extends Controller
     	$user->registration_token = null;
     	$user->save();
 
-	    return redirect()->route('login')
+	    return redirect()->route('home')
 		    ->with('alert', '¡Tu email ya fue confirmado!');
     }
 
